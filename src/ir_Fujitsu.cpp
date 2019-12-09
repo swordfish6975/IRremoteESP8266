@@ -188,7 +188,7 @@ void IRFujitsuAC::buildState(void) {
                 _swingMode);
         // FALL THRU
       case fujitsu_ac_remote_model_t::ARREF1E:
-         remote_state[14] = 0x21
+         remote_state[14] = 0x21;
          setBits(&remote_state[10], kHighNibble, kFujitsuAcSwingSize,
                 _swingMode);
         // FALL THRU
