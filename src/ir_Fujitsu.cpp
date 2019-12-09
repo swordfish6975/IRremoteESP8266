@@ -17,6 +17,7 @@
 //  * Fujitsu ASYG7LMCA with remote AR-REB1E
 //  * Fujitsu AR-RAE1E remote.
 //  * Fujitsu General with remote AR-JW2
+//  * Fujutsu ASTG09KMCA/ASTG09KMCA with remote AR-REF1E
 //  * <Add models (A/C & remotes) you've gotten it working with here>
 
 // Ref:
@@ -83,6 +84,7 @@ void IRFujitsuAC::setModel(const fujitsu_ac_remote_model_t model) {
       break;
     case fujitsu_ac_remote_model_t::ARRY4:
     case fujitsu_ac_remote_model_t::ARRAH2E:
+    case fujitsu_ac_remote_model_t::ARREF1E:
     case fujitsu_ac_remote_model_t::ARREB1E:
     default:
       _state_length = kFujitsuAcStateLength;
@@ -136,6 +138,7 @@ void IRFujitsuAC::buildState(void) {
       switch (_model) {
         case fujitsu_ac_remote_model_t::ARRY4:
         case fujitsu_ac_remote_model_t::ARRAH2E:
+        case fujitsu_ac_remote_model_t::ARREF1E:
         case fujitsu_ac_remote_model_t::ARREB1E:
           remote_state[5] = 0xFE;
           break;
@@ -184,6 +187,11 @@ void IRFujitsuAC::buildState(void) {
         setBits(&remote_state[10], kHighNibble, kFujitsuAcSwingSize,
                 _swingMode);
         // FALL THRU
+      case fujitsu_ac_remote_model_t::ARREF1E:
+         remote_state[14] = 0x21
+         setBits(&remote_state[10], kHighNibble, kFujitsuAcSwingSize,
+                _swingMode);
+        // FALL THRU
       default:
         checksum = sumBytes(remote_state + _state_length_short,
                             _state_length - _state_length_short - 1);
@@ -194,6 +202,7 @@ void IRFujitsuAC::buildState(void) {
     switch (_model) {
       case fujitsu_ac_remote_model_t::ARRY4:
       case fujitsu_ac_remote_model_t::ARRAH2E:
+      case fujitsu_ac_remote_model_t::ARREF1E:
       case fujitsu_ac_remote_model_t::ARREB1E:
         // The last byte is the inverse of penultimate byte
         remote_state[_state_length_short - 1] =
@@ -211,6 +220,7 @@ void IRFujitsuAC::buildState(void) {
 uint8_t IRFujitsuAC::getStateLength(void) {
   this->buildState();  // Force an update of the internal state.
   if (((_model == fujitsu_ac_remote_model_t::ARRAH2E ||
+        _model == fujitsu_ac_remote_model_t::ARREF1E ||
         _model == fujitsu_ac_remote_model_t::ARREB1E ||
         _model == fujitsu_ac_remote_model_t::ARRY4) &&
        remote_state[5] != 0xFE) ||
@@ -330,6 +340,7 @@ void IRFujitsuAC::setCmd(const uint8_t cmd) {
       switch (_model) {
         // Only these remotes have horizontal.
         case fujitsu_ac_remote_model_t::ARRAH2E:
+        case fujitsu_ac_remote_model_t::ARREF1E:
         case fujitsu_ac_remote_model_t::ARJW2:
           _cmd = cmd;
           break;
@@ -433,6 +444,7 @@ void IRFujitsuAC::setSwing(const uint8_t swingMode) {
     case fujitsu_ac_remote_model_t::ARDB1:
     case fujitsu_ac_remote_model_t::ARREB1E:
     case fujitsu_ac_remote_model_t::ARRY4:
+    case fujitsu_ac_remote_model_t::ARREF1E:
       // Set the mode to max if out of range
       if (swingMode > kFujitsuAcSwingVert) _swingMode = kFujitsuAcSwingVert;
       break;
@@ -569,6 +581,7 @@ stdAc::state_t IRFujitsuAC::toCommon(void) {
   switch (result.model) {
     case fujitsu_ac_remote_model_t::ARREB1E:
     case fujitsu_ac_remote_model_t::ARRAH2E:
+    case fujitsu_ac_remote_model_t::ARREF1E:
     case fujitsu_ac_remote_model_t::ARRY4:
       result.clean = _clean;
       result.filter = _filter;
