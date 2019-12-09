@@ -119,6 +119,7 @@ enum fujitsu_ac_remote_model_t {
   ARREB1E,      // (3) AR-REB1E
   ARJW2,        // (4) AR-JW2  (Same as ARDB1 but with horiz control)
   ARRY4,        // (5) AR-RY4 (Same as AR-RAH2E but with clean & filter)
+  ARREF1E       // (6) AR-REF1E (Same as AR-RAH2E but without horiz control)
 };
 
 enum gree_ac_remote_model_t {
